@@ -2,7 +2,7 @@
 
 import time
 import logging
-from redfish import RedfishClient
+from redfish_client import RedfishClient
 from requests.exceptions import RequestException
 from pyVim.connect import SmartConnect, Disconnect
 import ssl
