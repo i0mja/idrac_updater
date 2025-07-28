@@ -1,6 +1,6 @@
-# iDrac updater
+# iDrac Updater
 
-**iDrac updater** is a simple yet powerful web-based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
+**iDrac Updater** is a simple yet powerful web‑based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
 
 ---
 
@@ -45,6 +45,12 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Alternatively run the provided helper which performs the above and initializes the database:
+
+```bash
+./setup.sh
+```
+
 ---
 
 ### 3. Run the Setup Wizard
@@ -67,6 +73,24 @@ This will prompt for:
 
 It will create the database and populate `.env` with required environment variables.
 
+#### Manual database initialisation
+
+If you prefer to create the database yourself:
+
+```bash
+export FLASK_APP=app.py
+flask shell
+```
+Inside the shell run:
+
+```python
+from app import app
+from models import db
+with app.app_context():
+    db.create_all()
+```
+Exit the shell with `quit()` or `Ctrl-D`.
+
 ---
 
 ### 4. Run in Development Mode
@@ -79,14 +103,20 @@ flask run --debug
 
 ### 5. Deploy Behind Apache (Production)
 
-Configure Apache using the provided `apache_firmware_maestro.conf`:
+Configure Apache using the provided `apache_idrac_updater.conf`:
 
 ```bash
-cp apache_firmware_maestro.conf /etc/httpd/conf.d/
-cp wsgi.py /var/www/idrac-updater/
+sudo cp apache_idrac_updater.conf /etc/httpd/conf.d/
+sudo mkdir -p /var/www/idrac_updater
+sudo cp wsgi.py /var/www/idrac_updater/
 ```
 
-Ensure the correct SELinux context and file permissions.
+Set the correct SELinux context and file permissions:
+```bash
+sudo restorecon -Rv /etc/httpd/conf.d/apache_idrac_updater.conf /var/www/idrac_updater
+sudo chown -R apache:apache /var/www/idrac_updater
+sudo setsebool -P httpd_can_network_connect 1
+```
 
 Then enable and restart Apache:
 
@@ -94,8 +124,20 @@ Then enable and restart Apache:
 sudo systemctl enable --now httpd
 ```
 
-Access the web interface at:\
-`https://<your-server>/firmware`
+Access the web interface at:
+`https://<your-server>/`
+
+#### Alternative: systemd + gunicorn
+
+If Apache is not desired, the repository includes a `idrac_updater.service` unit file
+that runs the app via gunicorn. Copy it to `/etc/systemd/system/`, adjust paths
+and enable it:
+
+```bash
+sudo cp idrac_updater.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now idrac_updater
+```
 
 ---
 
@@ -137,7 +179,9 @@ flask discover
 | `static/`                      | JS/CSS assets                       |
 | `requirements.txt`             | Python dependencies                 |
 | `wsgi.py`                      | WSGI entrypoint for Apache          |
-| `apache_firmware_maestro.conf` | Apache vhost config                 |
+| `apache_idrac_updater.conf`    | Apache vhost config                 |
+| `setup.sh`                     | Optional setup helper               |
+| `idrac_updater.service`        | systemd unit (alternative to Apache) |
 | `LICENSE`                      | MIT License                         |
 
 ---

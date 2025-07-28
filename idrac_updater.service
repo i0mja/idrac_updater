@@ -1,0 +1,14 @@
+[Unit]
+Description=iDrac Updater gunicorn service
+After=network.target
+
+[Service]
+Type=simple
+User=apache
+Group=apache
+WorkingDirectory=/opt/idrac_updater
+Environment="PATH=/opt/idrac_updater/venv/bin"
+ExecStart=/opt/idrac_updater/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 app:app
+
+[Install]
+WantedBy=multi-user.target
