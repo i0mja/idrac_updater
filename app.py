@@ -152,7 +152,8 @@ def readiness():
 
 def start_scheduler():
     load_schedules()
-    scheduler.start()
+    if not scheduler.running:
+        scheduler.start()
 
 try:
     app.before_first_request(start_scheduler)
