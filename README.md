@@ -10,10 +10,11 @@ SPNEGO/LDAP authentication on RHEL 9 systems joined to IdM with AD trusts.
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
+python setup_wizard.py
 export FLASK_APP=app.py
-flask shell -c "from models import db; db.create_all()"
 flask run
 ```
 
 For production, deploy under Apache using `wsgi.py` and `apache_firmware_maestro.conf`.
-Edit `config.py` to adjust environment specific options.
+Settings configured by the wizard are stored in `.env`. You can edit
+this file or `config.py` for advanced adjustments.
