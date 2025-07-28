@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Schedules</h2>
+<table>
+<tr><th>Name</th><th>Trigger</th><th>Group</th><th>Firmware</th><th>Dry‑run</th></tr>
+{% for s in schedules %}
+<tr>
+<td>{{ s.name }}</td>
+<td>{{ s.cron or (s.interval_minutes ~ ' min') }}</td>
+<td>{{ s.target_group.name if s.target_group else 'All' }}</td>
+<td>{{ s.firmware_path }}</td>
+<td>{{ s.dry_run }}</td>
+</tr>
+{% endfor %}
+</table>
+
+<h3>Create / Update Schedule</h3>
+<form method="post">
+Name:<input name="name">
+Firmware path/URL:<input name="firmware_path">
+Group:<select name="group_id">
+    <option value="">All</option>
+    {% for g in groups %}
+    <option value="{{ g.id }}">{{ g.name }}</option>
+    {% endfor %}
+</select>
+Cron:<input name="cron" placeholder="m h dom mon dow">
+or Interval (minutes):<input name="interval">
+Dry‑run:<input type="checkbox" name="dry_run">
+<button type="submit">Save</button>
+</form>
+{% endblock %}
