@@ -23,6 +23,8 @@ def main():
     admin_group = prompt("Admin group", "FW_MAESTRO_ADMIN")
     operator_group = prompt("Operator group", "FW_MAESTRO_OPERATOR")
     viewer_group = prompt("Viewer group", "FW_MAESTRO_VIEWER")
+    idm_server = prompt("IdM LDAP server", "idm.local")
+    idm_base_dn = prompt("IdM base DN", "DC=local,DC=corp")
     smtp_server = prompt("SMTP server", "localhost")
     smtp_from = prompt("Email from address", "firmware-maestro@example.com")
     smtp_port = prompt("SMTP port", "25")
@@ -40,6 +42,8 @@ def main():
         f"FM_ADMIN_GROUP={admin_group}",
         f"FM_OPERATOR_GROUP={operator_group}",
         f"FM_VIEWER_GROUP={viewer_group}",
+        f"FM_IDM_SERVER={idm_server}",
+        f"FM_IDM_BASE_DN={idm_base_dn}",
         f"FM_SMTP_SERVER={smtp_server}",
         f"FM_SMTP_FROM={smtp_from}",
         f"FM_SMTP_PORT={smtp_port}",

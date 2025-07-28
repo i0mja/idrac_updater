@@ -66,6 +66,7 @@ This will prompt for:
 - Database and log file paths
 - Flask secret key
 - AD group names for Admin/Operator/Viewer
+- IdM LDAP server and base DN
 - SMTP server settings
 - vCenter credentials
 - iDRAC credential YAML file path
@@ -110,6 +111,9 @@ sudo cp apache_idrac_updater.conf /etc/httpd/conf.d/
 sudo mkdir -p /var/www/idrac_updater
 sudo cp wsgi.py /var/www/idrac_updater/
 ```
+
+Edit `/etc/httpd/conf.d/apache_idrac_updater.conf` and set the `AuthLDAPURL`
+to match your IdM server and base DN if different from the defaults.
 
 Set the correct SELinux context and file permissions:
 ```bash
