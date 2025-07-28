@@ -1,4 +1,4 @@
-"""SQLAlchemy models for Firmware Maestro"""
+"""SQLAlchemy models for iDrac Updater"""
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime

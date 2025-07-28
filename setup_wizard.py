@@ -16,9 +16,9 @@ def prompt(question: str, default: str = None, secret: bool = False) -> str:
 
 
 def main():
-    print("=== Firmware Maestro Setup Wizard ===")
+    print("=== iDrac Updater Setup Wizard ===")
     base_dir = Path(__file__).resolve().parent
-    db_path = prompt("Database path", str(base_dir / "firmware_maestro.sqlite"))
+    db_path = prompt("Database path", str(base_dir / "idrac_updater.sqlite"))
     secret_key = prompt("Flask secret key", "change-me")
     admin_group = prompt("Admin group", "FW_MAESTRO_ADMIN")
     operator_group = prompt("Operator group", "FW_MAESTRO_OPERATOR")

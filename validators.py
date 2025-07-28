@@ -1,4 +1,4 @@
-"""Input validation helpers for Firmware Maestro."""
+"""Input validation helpers for iDrac Updater."""
 
 import re
 import smtplib

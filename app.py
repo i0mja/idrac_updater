@@ -1,9 +1,9 @@
-"""Firmware Maestro
+"""iDrac Updater
 
 README
 ======
 
-Firmware Maestro is a minimal web‑based firmware‑update orchestrator for Dell iDRAC endpoints.
+iDrac Updater is a minimal web‑based firmware‑update orchestrator for Dell iDRAC endpoints.
 It discovers hosts via Redfish and VMware vCenter, schedules updates with APScheduler,
 and integrates with RHEL IdM/AD trusts using Apache SPNEGO/Kerberos SSO.
 
@@ -14,8 +14,8 @@ Quick start (RHEL 9)
 2. Install system packages:
        sudo dnf install httpd mod_ssl mod_auth_gssapi mod_authnz_ldap python3 python3‑pip gcc
 3. Clone & install:
-       git clone https://example.com/FirmwareMaestro.git
-       cd FirmwareMaestro
+       git clone https://example.com/idrac_updater.git
+       cd idrac_updater
        python3 -m venv venv
        source venv/bin/activate
        pip install -r requirements.txt
@@ -25,7 +25,7 @@ Quick start (RHEL 9)
        flask shell -c "from models import db; db.create_all()"
 6. Run stand‑alone for tests:
        flask run --debug
-7. Deploy behind Apache using the supplied *apache_firmware_maestro.conf* and *wsgi.py*.
+7. Deploy behind Apache using the supplied *apache_idrac_updater.conf* and *wsgi.py*.
 
 For detailed docs see each file’s inline comments.
 

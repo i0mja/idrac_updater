@@ -96,7 +96,10 @@ Exit the shell with `quit()` or `Ctrl-D`.
 
 ### 4. Run in Development Mode
 
+Specify the application module when starting Flask:
+
 ```bash
+export FLASK_APP=app.py  # or use --app app.py
 flask run --debug
 ```
 

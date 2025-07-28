@@ -1,4 +1,4 @@
-"""Configuration loader for Firmware Maestro.
+"""Configuration loader for iDrac Updater.
 
 Values can be overridden with environment variables or a .env file.
 """
