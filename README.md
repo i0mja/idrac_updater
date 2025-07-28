@@ -1,6 +1,6 @@
-# iDrac Updater
+# iDrac updater
 
-**iDrac Updater** is a simple yet powerful web-based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
+**iDrac updater** is a simple yet powerful web-based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
 
 ---
 
@@ -128,10 +128,16 @@ flask discover
 | `validators.py`                | Connection checks for iDRAC/vCenter |
 | `config.py`                    | User config                         |
 | `setup_wizard.py`              | Interactive setup wizard            |
+| `inventory.py`                 | vCenter and iDRAC Redfish discovery |
+| `update.py`                    | Redfish firmware update logic       |
+| `redfish_client.py`            | Custom Redfish wrapper              |
+| `logging_config.py`            | Rotating log setup and policy       |
 | `templates/`                   | Jinja2 HTML templates               |
 | `static/`                      | JS/CSS assets                       |
+| `requirements.txt`             | Python dependencies                 |
 | `wsgi.py`                      | WSGI entrypoint for Apache          |
 | `apache_firmware_maestro.conf` | Apache vhost config                 |
+| `LICENSE`                      | MIT License                         |
 
 ---
 
