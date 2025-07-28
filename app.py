@@ -161,4 +161,5 @@ except AttributeError:
     app.before_request(start_scheduler)
 
 if __name__ == "__main__":
-    app.run()
+    # Listen on all interfaces when running directly for easier access
+    app.run(host="0.0.0.0", port=5000)

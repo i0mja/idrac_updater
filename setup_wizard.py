@@ -86,7 +86,7 @@ def main():
     with app.app_context():
         db.create_all()
     print(f"Database initialised at {db_path}")
-    print("Setup complete. Run 'flask run' to start the server.")
+    print("Setup complete. Run 'flask run --host 0.0.0.0 --debug' to start the server.")
 
 
 if __name__ == "__main__":
