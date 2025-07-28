@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>vCenters</h2>
+<table>
+<tr><th>Name</th><th>URL</th><th>User</th><th>Actions</th></tr>
+{% for vc in vcenters %}
+<tr>
+<td>{{ vc.name }}</td>
+<td>{{ vc.url }}</td>
+<td>{{ vc.username }}</td>
+<td><a href="{{ url_for('test_vcenter', vc_id=vc.id) }}">Test Connection</a></td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}
