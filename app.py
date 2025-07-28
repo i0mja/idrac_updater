@@ -35,10 +35,11 @@ import logging
 from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
-from models import db, Host, Group, Schedule
-from scheduler import scheduler, load_schedules, firmware_job
+from models import db, Host, Group, Schedule, VCenter
+from scheduler import scheduler, load_schedules
 import inventory
 import utils
+import validators
 import config
 
 # --- Flask setup ---
@@ -76,6 +77,20 @@ def hosts():
     hosts = Host.query.all()
     return render_template("hosts.html", hosts=hosts)
 
+@app.route("/vcenters")
+@utils.require_role("Viewer")
+def vcenters():
+    vcenters = VCenter.query.all()
+    return render_template("vcenters.html", vcenters=vcenters)
+
+@app.route("/vcenters/<int:vc_id>/test")
+@utils.require_role("Operator")
+def test_vcenter(vc_id):
+    vc = VCenter.query.get_or_404(vc_id)
+    ok = validators.validate_vcenter_connection(vc.url, vc.username, vc.password)
+    flash("Connection OK" if ok else "Connection failed", "success" if ok else "error")
+    return redirect(url_for('vcenters'))
+
 @app.route("/hosts/<int:host_id>/policy", methods=["POST"])
 @utils.require_role("Operator")
 def update_policy(host_id):
@@ -112,6 +127,26 @@ def schedules():
 @utils.require_role("Admin")
 def settings():
     return render_template("settings.html")
+
+@app.route("/help")
+@utils.require_role("Viewer")
+def help():
+    return render_template("help.html")
+
+@app.route("/healthz")
+def healthz():
+    return "ok"
+
+@app.route("/readiness")
+def readiness():
+    # simple readiness check of first records
+    host = Host.query.first()
+    vc = VCenter.query.first()
+    if host and not validators.validate_idrac_connection(host.idrac_ip, 'root', 'calvin'):
+        return "idrac fail", 500
+    if vc and not validators.validate_vcenter_connection(vc.url, vc.username, vc.password):
+        return "vcenter fail", 500
+    return "ready"
 
 @app.before_first_request
 def start_scheduler():

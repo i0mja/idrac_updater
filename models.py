@@ -1,8 +1,8 @@
 """SQLAlchemy models for Firmware Maestro"""
 
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime, timedelta
-from sqlalchemy import func, UniqueConstraint
+from datetime import datetime
+from sqlalchemy import UniqueConstraint
 
 db = SQLAlchemy()
 
@@ -30,6 +30,14 @@ class HostGroupMap(db.Model):
     __tablename__ = "host_group_map"
     host_id = db.Column(db.Integer, db.ForeignKey("hosts.id"), primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"), primary_key=True)
+
+class VCenter(db.Model):
+    __tablename__ = "vcenters"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+    url = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, nullable=False)
+    password = db.Column(db.String, nullable=False)
 
 class Schedule(db.Model):
     __tablename__ = "schedules"

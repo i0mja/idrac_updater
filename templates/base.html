@@ -9,10 +9,12 @@
         <nav>
             <a href="{{ url_for('dashboard') }}">Dashboard</a> |
             <a href="{{ url_for('hosts') }}">Hosts</a> |
+            <a href="{{ url_for('vcenters') }}">vCenters</a> |
             <a href="{{ url_for('schedules') }}">Schedules</a> |
             {% if request.user_role == 'Admin' %}
             <a href="{{ url_for('settings') }}">Settings</a> |
             {% endif %}
+            <a href="{{ url_for('help') }}">Help</a> |
             <span class="user">{{ request.user }} ({{ request.user_role }})</span>
         </nav>
         <div class="content">
