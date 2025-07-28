@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Firmware Maestro</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <nav>
+            <a href="{{ url_for('dashboard') }}">Dashboard</a> |
+            <a href="{{ url_for('hosts') }}">Hosts</a> |
+            <a href="{{ url_for('schedules') }}">Schedules</a> |
+            {% if request.user_role == 'Admin' %}
+            <a href="{{ url_for('settings') }}">Settings</a> |
+            {% endif %}
+            <span class="user">{{ request.user }} ({{ request.user_role }})</span>
+        </nav>
+        <div class="content">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                <ul class="flashes">
+                {% for category, message in messages %}
+                  <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+              {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </div>
+    </body>
+</html>
