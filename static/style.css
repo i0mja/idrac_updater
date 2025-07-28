@@ -1,9 +1,19 @@
-body { font-family: sans-serif; margin: 0 }
-nav { background: #444; color: #fff; padding: 0.5em }
-nav a { color: #fff; margin-right: 1em; text-decoration: none }
-nav .user { float: right }
-.content { padding: 1em }
-table { border-collapse: collapse; width: 100% }
-th, td { border: 1px solid #ccc; padding: 0.3em; text-align: left }
-.flashes li.success { color: green }
-.flashes li.error { color: red }
+body { font-family: sans-serif; margin: 0; background: #f4f4f4; }
+nav { background: #2c3e50; color: #fff; padding: 0.7em 1em; }
+nav a { color: #fff; margin-right: 1em; text-decoration: none; }
+nav .logo { font-weight: bold; margin-right: 2em; }
+nav .user { float: right; }
+.content { padding: 1em 2em; }
+table { border-collapse: collapse; width: 100%; background: #fff; }
+th, td { border: 1px solid #ccc; padding: 0.5em; text-align: left; }
+th { background: #eee; }
+tr:nth-child(even) { background: #fafafa; }
+.status-OK { color: green; font-weight: bold; }
+.status-ERROR { color: red; font-weight: bold; }
+.status-UNKNOWN { color: #777; }
+.status-UPDATING, .status-PARTIAL { color: orange; font-weight: bold; }
+.flashes { list-style: none; padding: 0; }
+.flashes li { margin: 0.5em 0; padding: 0.5em; border-radius: 4px; }
+.flashes li.success { background: #e0ffe0; color: #006400; }
+.flashes li.error { background: #ffe0e0; color: #8b0000; }
+.inline { display: inline; }
