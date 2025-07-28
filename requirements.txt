@@ -1,0 +1,8 @@
+Flask==3.0.2
+Flask-SQLAlchemy==3.1.1
+Flask-APScheduler==2.1.0
+APScheduler==3.10.4
+python-redfish==2.4.5
+pyvmomi==8.0.0
+requests==2.32.3
+ldap3==2.9.1
