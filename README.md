@@ -13,6 +13,7 @@
 - 🧑‍💼 Role-based access control (Admin / Operator / Viewer) via AD groups
 - 🧪 Built-in vCenter and iDRAC connectivity validation
 - 📋 Web dashboard for firmware job management, host inventory, and status
+- 🧙 Simple command-line setup wizard to initialize `.env` and database
 
 ---
 
@@ -37,7 +38,7 @@ sudo dnf install httpd mod_ssl mod_auth_gssapi mod_authnz_ldap python3 python3-p
 ### 2. Clone and Set Up
 
 ```bash
-git clone https://github.com/i0mja/idrac_updater.git 
+git clone https://github.com/i0mja/idrac_updater.git
 cd idrac_updater
 python3 -m venv venv
 source venv/bin/activate
@@ -46,50 +47,28 @@ pip install -r requirements.txt
 
 ---
 
-### 3. Configure
+### 3. Run the Setup Wizard
 
-Edit `config.py`:
-
-```python
-DB_PATH = "/var/lib/idrac-updater/app.db"
-LOG_PATH = "/var/log/idrac-updater/app.log"
-VCENTER_HOST_POLICY_ATTRIBUTE = "HOST_POLICY"
-
-# Secret key for Flask sessions
-SECRET_KEY = "changeme"
-
-# AD group mappings for RBAC
-AD_GROUPS = {
-    "Admin": "CN=FW_Admins,OU=Groups,DC=example,DC=com",
-    "Operator": "CN=FW_Ops,OU=Groups,DC=example,DC=com",
-    "Viewer": "CN=FW_Viewers,OU=Groups,DC=example,DC=com"
-}
-
-# SMTP/email notification settings (optional)
-SMTP_SERVER = "mail.example.com"
-SMTP_SENDER = "noreply@example.com"
-
-# vCenter credentials (or use secrets manager)
-VCENTER_CREDENTIALS = {
-    "vcenter01.example.com": {
-        "username": "administrator@vsphere.local",
-        "password": "changeme"
-    }
-}
-```
-
----
-
-### 4. Initialize the Database
+Use the interactive setup wizard to generate your `.env` file and initialize the database:
 
 ```bash
-export FLASK_APP=app.py
-flask shell -c "from models import db; db.create_all()"
+python setup_wizard.py
 ```
+
+This will prompt for:
+
+- Database and log file paths
+- Flask secret key
+- AD group names for Admin/Operator/Viewer
+- SMTP server settings
+- vCenter credentials
+- iDRAC credential YAML file path
+
+It will create the database and populate `.env` with required environment variables.
 
 ---
 
-### 5. Run in Development Mode
+### 4. Run in Development Mode
 
 ```bash
 flask run --debug
@@ -97,7 +76,7 @@ flask run --debug
 
 ---
 
-### 6. Deploy Behind Apache (Production)
+### 5. Deploy Behind Apache (Production)
 
 Configure Apache using the provided `apache_firmware_maestro.conf`:
 
@@ -148,6 +127,7 @@ flask discover
 | `utils.py`                     | Helper functions & decorators       |
 | `validators.py`                | Connection checks for iDRAC/vCenter |
 | `config.py`                    | User config                         |
+| `setup_wizard.py`              | Interactive setup wizard            |
 | `templates/`                   | Jinja2 HTML templates               |
 | `static/`                      | JS/CSS assets                       |
 | `wsgi.py`                      | WSGI entrypoint for Apache          |
