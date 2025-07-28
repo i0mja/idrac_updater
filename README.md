@@ -100,7 +100,8 @@ Specify the application module when starting Flask:
 
 ```bash
 export FLASK_APP=app.py  # or use --app app.py
-flask run --debug
+# Listen on all interfaces so the UI is reachable remotely
+flask run --debug --host 0.0.0.0 --port 5000
 ```
 
 ---
