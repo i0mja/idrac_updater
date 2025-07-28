@@ -8,7 +8,6 @@ from pyVim.connect import SmartConnect, Disconnect
 import ssl
 import config
 from models import db, Host
-from redfish import RedfishClient
 
 def discover_idrac_from_list(idrac_list: list[dict]) -> None:
     """Insert or update Host entries based on provided list of dicts {hostname, idrac_ip}"""
