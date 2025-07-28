@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>vCenters</h2>
+{% if vcenters %}
 <table>
 <tr><th>Name</th><th>URL</th><th>User</th><th>Actions</th></tr>
 {% for vc in vcenters %}
@@ -12,4 +13,7 @@
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p>No vCenter servers configured.</p>
+{% endif %}
 {% endblock %}

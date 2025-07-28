@@ -111,10 +111,12 @@ def schedules():
         cron = request.form.get("cron")
         interval = request.form.get("interval")
         dry_run = bool(request.form.get("dry_run"))
+        enabled = bool(request.form.get("enabled", True))
         sched = Schedule(name=name, firmware_path=firmware_path, cron=cron or None,
                          interval_minutes=int(interval) if interval else None,
                          target_group_id=int(group_id) if group_id else None,
-                         dry_run=dry_run)
+                         dry_run=dry_run,
+                         enabled=enabled)
         db.session.add(sched)
         db.session.commit()
         load_schedules()

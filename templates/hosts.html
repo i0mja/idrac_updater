@@ -1,19 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Hosts</h2>
+{% if hosts %}
 <table>
 <tr><th>Hostname</th><th>iDRAC IP</th><th>Cluster</th><th>Policy</th><th>Last Status</th><th>Action</th></tr>
 {% for h in hosts %}
-<form action="{{ url_for('update_policy', host_id=h.id) }}" method="post">
+<form class="inline" action="{{ url_for('update_policy', host_id=h.id) }}" method="post">
 <tr>
 <td>{{ h.hostname }}</td>
 <td>{{ h.idrac_ip }}</td>
 <td>{{ h.cluster }}</td>
 <td><input type="text" name="policy" value="{{ h.host_policy or '' }}"></td>
-<td>{{ h.last_status }}</td>
+<td class="status-{{ h.last_status }}">{{ h.last_status }}</td>
 <td><button type="submit">Save</button></td>
 </tr>
 </form>
 {% endfor %}
 </table>
+{% else %}
+<p>No hosts found. Run discovery to populate the inventory.</p>
+{% endif %}
 {% endblock %}
