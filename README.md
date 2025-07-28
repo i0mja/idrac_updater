@@ -1,6 +1,6 @@
-# Firmware Maestro
+# iDrac Updater
 
-**Firmware Maestro** is a simple yet powerful web-based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
+**iDrac Updater** is a simple yet powerful web-based firmware update orchestrator for Dell iDRAC endpoints. It discovers servers via Redfish and VMware vCenter, schedules updates using APScheduler, and integrates seamlessly with Red Hat IdM and Active Directory via Apache SPNEGO/Kerberos SSO.
 
 ---
 
