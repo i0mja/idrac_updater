@@ -144,16 +144,21 @@ def readiness():
     # simple readiness check of first records
     host = Host.query.first()
     vc = VCenter.query.first()
-    if host and not validators.validate_idrac_connection(host.idrac_ip, 'root', 'calvin'):
+    if host and not validators.validate_idrac_connection(host.idrac_ip, config.IDRAC_DEFAULT_USER, config.IDRAC_DEFAULT_PASS):
         return "idrac fail", 500
     if vc and not validators.validate_vcenter_connection(vc.url, vc.username, vc.password):
         return "vcenter fail", 500
     return "ready"
 
-@app.before_first_request
 def start_scheduler():
     load_schedules()
     scheduler.start()
+
+try:
+    app.before_first_request(start_scheduler)
+except AttributeError:
+    # fallback for very old Flask versions
+    app.before_request(start_scheduler)
 
 if __name__ == "__main__":
     app.run()

@@ -31,4 +31,8 @@ VCENTER_HOST = os.getenv('FM_VC_HOST', 'vcenter.example.com')
 
 IDRAC_CRED_FILE = os.getenv('FM_IDRAC_CRED_FILE', str(BASE_DIR / 'idrac_creds.yaml'))
 
+# Default credentials for newly discovered hosts
+IDRAC_DEFAULT_USER = os.getenv('FM_IDRAC_USER', 'root')
+IDRAC_DEFAULT_PASS = os.getenv('FM_IDRAC_PASS', 'calvin')
+
 LOG_PATH = os.getenv('FM_LOG_PATH', str(BASE_DIR / 'fm.log'))

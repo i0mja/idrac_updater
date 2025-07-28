@@ -63,6 +63,7 @@ This will prompt for:
 - SMTP server settings
 - vCenter credentials
 - iDRAC credential YAML file path
+- Default iDRAC username and password
 
 It will create the database and populate `.env` with required environment variables.
 

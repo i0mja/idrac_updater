@@ -51,7 +51,12 @@ def apply_firmware(host: Host, fw_path: str, dry_run: bool = False):
     # Enter maintenance for ESXi hosts
     if host.vcenter:
         _enter_maintenance(host.hostname)
-    redfish_obj = RedfishClient(base_url=f"https://{host.idrac_ip}", username="root", password="calvin", default_prefix="/redfish/v1")
+    redfish_obj = RedfishClient(
+        base_url=f"https://{host.idrac_ip}",
+        username=config.IDRAC_DEFAULT_USER,
+        password=config.IDRAC_DEFAULT_PASS,
+        default_prefix="/redfish/v1",
+    )
     try:
         redfish_obj.login()
         response = redfish_obj.simple_update(fw_path)

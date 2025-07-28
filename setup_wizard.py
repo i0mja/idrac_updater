@@ -26,9 +26,11 @@ def main():
     smtp_server = prompt("SMTP server", "localhost")
     smtp_from = prompt("Email from address", "firmware-maestro@example.com")
     smtp_port = prompt("SMTP port", "25")
-    vc_host = prompt("vCenter hostname", "vcenter.example.com")
+    vc_host = prompt("vCenter URL", "https://vcenter.example.com")
     vc_user = prompt("vCenter username", "administrator@vsphere.local")
     vc_pass = prompt("vCenter password", secret=True)
+    idrac_user = prompt("Default iDRAC username", "root")
+    idrac_pass = prompt("Default iDRAC password", "calvin", secret=True)
     idrac_file = prompt("iDRAC credential file", str(base_dir / "idrac_creds.yml"))
     log_path = prompt("Log file path", str(base_dir / "fm.log"))
 
@@ -45,6 +47,8 @@ def main():
         f"FM_VC_USER={vc_user}",
         f"FM_VC_PASS={vc_pass}",
         f"FM_IDRAC_CRED_FILE={idrac_file}",
+        f"FM_IDRAC_USER={idrac_user}",
+        f"FM_IDRAC_PASS={idrac_pass}",
         f"FM_LOG_PATH={log_path}",
     ]
 
@@ -56,7 +60,25 @@ def main():
         key, val = line.split("=", 1)
         os.environ[key] = val
 
-    from app import app, db
+    vc_test_url = vc_host if vc_host.startswith('http') else f'https://{vc_host}'
+    print("Testing vCenter connection...")
+    try:
+        import validators
+        if validators.validate_vcenter_connection(vc_test_url, vc_user, vc_pass):
+            print("vCenter connection successful.")
+        else:
+            print("WARNING: Could not connect to vCenter.")
+    except Exception as exc:
+        print(f"vCenter connection test failed: {exc}")
+
+    from flask import Flask
+    from models import db
+
+    app = Flask(__name__)
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_path}"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.init_app(app)
+
     with app.app_context():
         db.create_all()
     print(f"Database initialised at {db_path}")
