@@ -26,6 +26,13 @@ DEFAULT_MAINTENANCE_WINDOW = os.getenv('FM_MAINT_WINDOW', 'Sat 00:00-06:00')
 SMTP_SERVER = os.getenv('FM_SMTP_SERVER', 'localhost')
 SMTP_FROM = os.getenv('FM_SMTP_FROM', 'firmware-maestro@example.com')
 SMTP_PORT = int(os.getenv('FM_SMTP_PORT', '25'))
+MAIL_SERVER = SMTP_SERVER
+MAIL_PORT = SMTP_PORT
+MAIL_FROM = SMTP_FROM
+MAIL_USERNAME = os.getenv('FM_SMTP_USER', '')
+MAIL_PASSWORD = os.getenv('FM_SMTP_PASS', '')
+MAIL_USE_TLS = os.getenv('FM_SMTP_TLS', 'false').lower() == 'true'
+ADMIN_EMAILS = [MAIL_FROM]
 
 VCENTER_USER = os.getenv('FM_VC_USER', 'administrator@vsphere.local')
 VCENTER_PASS = os.getenv('FM_VC_PASS', 'changeme')
@@ -38,3 +45,11 @@ IDRAC_DEFAULT_USER = os.getenv('FM_IDRAC_USER', 'root')
 IDRAC_DEFAULT_PASS = os.getenv('FM_IDRAC_PASS', 'calvin')
 
 LOG_PATH = os.getenv('FM_LOG_PATH', str(BASE_DIR / 'fm.log'))
+
+# Additional application settings
+MAIL_NOTIFICATIONS = os.getenv('FM_MAIL_NOTIFICATIONS', 'false').lower() == 'true'
+AUTO_DISCOVERY = os.getenv('FM_AUTO_DISCOVERY', 'false').lower() == 'true'
+DISCOVERY_INTERVAL = int(os.getenv('FM_DISCOVERY_INTERVAL', '60'))
+SESSION_LIFETIME = int(os.getenv('FM_SESSION_LIFETIME', '3600'))
+
+VERSION = os.getenv('FM_VERSION', '0.1.0')

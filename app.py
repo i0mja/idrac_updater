@@ -35,6 +35,8 @@ import crypto_utils
 # --- Flask setup ---
 app = Flask(__name__)
 app.config.from_object(config)
+app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{config.DB_PATH}"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Initialize extensions
 db.init_app(app)

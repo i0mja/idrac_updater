@@ -25,8 +25,9 @@ def get_user_role(username: str) -> str:
         return "Operator"
     return "Viewer"
 
-def require_role(role: str):
-    """Decorator to enforce min role"""
+def require_role(role: str, api: bool = False):
+    """Decorator to enforce minimum role. If ``api`` is True, returns HTTP
+    error responses directly instead of rendering templates."""
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):

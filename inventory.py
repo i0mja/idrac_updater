@@ -61,7 +61,7 @@ def discover_from_vcenter() -> None:
     Disconnect(si)
 
 import logging
-from . import scheduler as scheduler_mod
+import scheduler as scheduler_mod
 from models import Schedule, Task, FirmwareRepo
 import validators
 import update
