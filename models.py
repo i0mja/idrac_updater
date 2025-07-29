@@ -111,3 +111,13 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
     role = db.Column(db.String, default="Viewer")
+
+
+class LocalUser(db.Model):
+    """Local application user for environments without SSO."""
+
+    __tablename__ = "local_users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
+    role = db.Column(db.String, default="Admin")

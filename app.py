@@ -35,6 +35,7 @@ from flask import (
 from flask_apscheduler import APScheduler
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash
 from werkzeug.utils import secure_filename
 
 import config
@@ -42,6 +43,7 @@ import crypto_utils
 import inventory
 import utils
 import validators
+from blueprints.auth import auth_bp
 from blueprints.ui import ui_bp
 from models import FirmwareRepo, Group, Host, Schedule, Task, User, VCenter, db
 
@@ -55,6 +57,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db.init_app(app)
 migrate = Migrate(app, db)
 app.register_blueprint(ui_bp)
+app.register_blueprint(auth_bp)
 
 
 def make_celery(flask_app: Flask) -> Celery:
@@ -193,6 +196,28 @@ def run_task():
         inventory.perform_health_checks()
     else:
         app.logger.error(f"Unknown task: {task_name}")
+
+
+@app.cli.command("create-user")
+def create_user():
+    """Create a local user account."""
+    from getpass import getpass
+
+    from models import LocalUser
+
+    username = input("Username: ").strip()
+    password = getpass("Password: ")
+    role = input("Role [Admin/Operator/Viewer] (default Admin): ").strip() or "Admin"
+
+    with app.app_context():
+        user = LocalUser(
+            username=username,
+            password_hash=generate_password_hash(password),
+            role=role,
+        )
+        db.session.add(user)
+        db.session.commit()
+        print(f"User {username} created with role {role}")
 
 
 # --- Context Processors ---
