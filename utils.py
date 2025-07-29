@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from typing import Optional
 
 import requests
-from flask import abort, g, request
+from flask import abort, g, redirect, request, session, url_for
 
 import config
 
@@ -38,10 +38,16 @@ def require_role(role: str, api: bool = False):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            username = request.environ.get("REMOTE_USER") or request.headers.get(
-                "X-Remote-User"
+            username = (
+                session.get("username")
+                or request.environ.get("REMOTE_USER")
+                or request.headers.get("X-Remote-User")
             )
             if not username:
+                from models import LocalUser
+
+                if LocalUser.query.first() and not api:
+                    return redirect(url_for("auth.login", next=request.path))
                 abort(401)
             roles = ["Viewer", "Operator", "Admin"]
             user_role = get_user_role(username)

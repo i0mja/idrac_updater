@@ -87,6 +87,7 @@ Inside the shell run:
 ```python
 from app import app
 from models import db
+
 with app.app_context():
     db.create_all()
 ```
@@ -104,6 +105,10 @@ export FLASK_APP=app.py  # or use --app app.py
 flask run --debug --host 0.0.0.0 --port 5000
 celery -A app.celery worker --concurrency 4 -l info
 ```
+
+On the first run, open `http://localhost:5000/setup` to create a local
+administrator account. Subsequent logins can be performed at
+`/login` when not using SPNEGO.
 
 ---
 
