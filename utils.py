@@ -63,3 +63,59 @@ def notify_webhook(url: str, payload: dict):
     except Exception as exc:
         print(f"Webhook notify failed: {exc}")
 
+
+# --- Helper functions ---
+
+def allowed_file(filename: str, allowed_exts: set[str]) -> bool:
+    """Check if filename has an allowed extension."""
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {e.lower() for e in allowed_exts}
+
+
+def check_database() -> bool:
+    from models import db
+    try:
+        db.session.execute("SELECT 1")
+        return True
+    except Exception:
+        return False
+
+
+def check_sample_idrac() -> bool:
+    from models import Host
+    import validators
+    host = Host.query.first()
+    if not host:
+        return True
+    return validators.validate_idrac_connection(host.idrac_ip, config.IDRAC_DEFAULT_USER, config.IDRAC_DEFAULT_PASS)
+
+
+def check_vcenters() -> bool:
+    from models import VCenter
+    import validators
+    for vc in VCenter.query.all():
+        if not validators.validate_vcenter_connection(vc.url, vc.username, vc.password):
+            return False
+    return True
+
+
+def check_system_health() -> bool:
+    return check_database() and check_vcenters()
+
+
+def create_system_backup() -> str | None:
+    """Very basic database backup."""
+    import shutil
+    from pathlib import Path
+    import time
+    src = Path(config.DB_PATH)
+    if not src.exists():
+        return None
+    backup_dir = Path(config.BASE_DIR) / "backups"
+    backup_dir.mkdir(exist_ok=True)
+    target = backup_dir / f"backup_{int(time.time())}.db"
+    try:
+        shutil.copy(src, target)
+        return str(target)
+    except Exception:
+        return None
+

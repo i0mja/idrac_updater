@@ -59,3 +59,68 @@ def discover_from_vcenter() -> None:
         db.session.add(host)
     db.session.commit()
     Disconnect(si)
+
+import logging
+from . import scheduler as scheduler_mod
+from models import Schedule, Task, FirmwareRepo
+import validators
+import update
+
+logger = logging.getLogger(__name__)
+
+
+def discover_from_redfish():
+    """Dummy discovery using credentials file."""
+    try:
+        with open(config.IDRAC_CRED_FILE) as f:
+            hosts = yaml.safe_load(f) or []
+    except FileNotFoundError:
+        logger.warning("IDRAC_CRED_FILE not found")
+        return
+    if isinstance(hosts, list):
+        discover_idrac_from_list(hosts)
+
+
+def sync_firmware_repo():
+    logger.info("Sync firmware repository stub")
+
+
+def perform_health_checks():
+    logger.info("Running basic health checks")
+    for host in Host.query.all():
+        ok = validators.validate_idrac_connection(host.idrac_ip, config.IDRAC_DEFAULT_USER, config.IDRAC_DEFAULT_PASS)
+        host.last_status = "OK" if ok else "ERROR"
+        host.last_message = "Health OK" if ok else "Unreachable"
+        db.session.add(host)
+    db.session.commit()
+
+
+def perform_host_update(host_id: int, firmware_path: str, dry_run: bool, task_id: int | None = None):
+    host = Host.query.get(host_id)
+    if not host:
+        return
+    result = update.apply_firmware(host, firmware_path, dry_run)
+    if task_id:
+        task = Task.query.get(task_id)
+        if task:
+            task.status = result
+            db.session.add(task)
+    db.session.commit()
+
+
+def get_host_inventory(ip: str) -> dict:
+    try:
+        from redfish_client import RedfishClient
+        rf = RedfishClient(base_url=f"https://{ip}", username=config.IDRAC_DEFAULT_USER, password=config.IDRAC_DEFAULT_PASS)
+        rf.login()
+        data = rf.get("/redfish/v1/Systems/System.Embedded.1").dict
+        rf.logout()
+        return data
+    except Exception:
+        return {}
+
+
+def load_schedules():
+    scheduler_mod.load_schedules()
+
+

@@ -63,3 +63,33 @@ class JobHistory(db.Model):
     __table_args__ = (
         UniqueConstraint("schedule_id", "start_time", name="_schedule_start_uc"),
     )
+
+class FirmwareRepo(db.Model):
+    """Stored firmware packages"""
+    __tablename__ = "firmware_repo"
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String, nullable=False)
+    file_path = db.Column(db.String, nullable=False)
+    version = db.Column(db.String)
+    model_compatibility = db.Column(db.String)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploader = db.Column(db.String)
+
+class Task(db.Model):
+    """Background tasks such as manual updates"""
+    __tablename__ = "tasks"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    description = db.Column(db.String)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.String)
+    host_id = db.Column(db.Integer, db.ForeignKey("hosts.id"))
+    host = db.relationship("Host")
+    status = db.Column(db.String, default="QUEUED")
+
+class User(db.Model):
+    """Minimal user representation for audit records"""
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String, unique=True, nullable=False)
+    role = db.Column(db.String, default="Viewer")
