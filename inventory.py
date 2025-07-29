@@ -8,6 +8,7 @@ from pyVim.connect import SmartConnect, Disconnect
 import ssl
 import config
 from models import db, Host
+from typing import Optional
 
 def discover_idrac_from_list(idrac_list: list[dict]) -> None:
     """Insert or update Host entries based on provided list of dicts {hostname, idrac_ip}"""
@@ -95,7 +96,7 @@ def perform_health_checks():
     db.session.commit()
 
 
-def perform_host_update(host_id: int, firmware_path: str, dry_run: bool, task_id: int | None = None):
+def perform_host_update(host_id: int, firmware_path: str, dry_run: bool, task_id: Optional[int] = None):
     host = Host.query.get(host_id)
     if not host:
         return

@@ -8,6 +8,7 @@ import requests
 from functools import wraps
 from flask import request, abort
 import config
+from typing import Optional
 
 def get_user_groups(username: str) -> list[str]:
     """Return list of groups the user belongs to using system 'id -Gn' (SSSD cache)."""
@@ -103,7 +104,7 @@ def check_system_health() -> bool:
     return check_database() and check_vcenters()
 
 
-def create_system_backup() -> str | None:
+def create_system_backup() -> Optional[str]:
     """Very basic database backup."""
     import shutil
     from pathlib import Path
