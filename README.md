@@ -102,6 +102,7 @@ Specify the application module when starting Flask:
 export FLASK_APP=app.py  # or use --app app.py
 # Listen on all interfaces so the UI is reachable remotely
 flask run --debug --host 0.0.0.0 --port 5000
+celery -A app.celery worker --concurrency 4 -l info
 ```
 
 ---

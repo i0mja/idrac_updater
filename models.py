@@ -1,10 +1,12 @@
 """SQLAlchemy models for iDrac Updater"""
 
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import UniqueConstraint
 
 db = SQLAlchemy()
+
 
 class Host(db.Model):
     __tablename__ = "hosts"
@@ -17,7 +19,10 @@ class Host(db.Model):
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     last_status = db.Column(db.String, default="UNKNOWN")  # OK, ERROR, UPDATING
     last_message = db.Column(db.String, nullable=True)
-    groups = db.relationship("Group", secondary="host_group_map", back_populates="hosts")
+    groups = db.relationship(
+        "Group", secondary="host_group_map", back_populates="hosts"
+    )
+
 
 class Group(db.Model):
     __tablename__ = "groups"
@@ -26,10 +31,12 @@ class Group(db.Model):
     dynamic_query = db.Column(db.String, nullable=True)  # For dynamic groups
     hosts = db.relationship("Host", secondary="host_group_map", back_populates="groups")
 
+
 class HostGroupMap(db.Model):
     __tablename__ = "host_group_map"
     host_id = db.Column(db.Integer, db.ForeignKey("hosts.id"), primary_key=True)
     group_id = db.Column(db.Integer, db.ForeignKey("groups.id"), primary_key=True)
+
 
 class VCenter(db.Model):
     __tablename__ = "vcenters"
@@ -38,6 +45,7 @@ class VCenter(db.Model):
     url = db.Column(db.String, nullable=False)
     username = db.Column(db.String, nullable=False)
     password = db.Column(db.String, nullable=False)
+
 
 class Schedule(db.Model):
     __tablename__ = "schedules"
@@ -52,20 +60,26 @@ class Schedule(db.Model):
     dry_run = db.Column(db.Boolean, default=False)
     max_concurrent = db.Column(db.Integer, nullable=True)
 
+
 class JobHistory(db.Model):
     __tablename__ = "job_history"
     id = db.Column(db.Integer, primary_key=True)
     schedule_id = db.Column(db.Integer, db.ForeignKey("schedules.id"))
+    schedule = db.relationship("Schedule")
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime, nullable=True)
-    status = db.Column(db.String, default="RUNNING")  # RUNNING, SUCCESS, FAILED, PARTIAL
+    status = db.Column(
+        db.String, default="RUNNING"
+    )  # RUNNING, SUCCESS, FAILED, PARTIAL
     message = db.Column(db.String, nullable=True)
     __table_args__ = (
         UniqueConstraint("schedule_id", "start_time", name="_schedule_start_uc"),
     )
 
+
 class FirmwareRepo(db.Model):
     """Stored firmware packages"""
+
     __tablename__ = "firmware_repo"
     id = db.Column(db.Integer, primary_key=True)
     filename = db.Column(db.String, nullable=False)
@@ -75,8 +89,10 @@ class FirmwareRepo(db.Model):
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
     uploader = db.Column(db.String)
 
+
 class Task(db.Model):
     """Background tasks such as manual updates"""
+
     __tablename__ = "tasks"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -87,8 +103,10 @@ class Task(db.Model):
     host = db.relationship("Host")
     status = db.Column(db.String, default="QUEUED")
 
+
 class User(db.Model):
     """Minimal user representation for audit records"""
+
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, unique=True, nullable=False)
