@@ -194,6 +194,17 @@ flask discover
 
 ---
 
+## 📡 REST API
+
+| Method & Path               | Description                    |
+| --------------------------- | ------------------------------ |
+| `GET /api/v1/hosts`         | List discovered hosts          |
+| `GET /api/v1/firmware_images` | Available firmware packages   |
+| `POST /api/v1/update_job`   | Trigger update jobs            |
+| `GET /api/v1/tasks/<id>`    | Retrieve task status           |
+
+---
+
 ## 🔐 Authentication & Roles
 
 Users authenticate via Kerberos (SPNEGO) if available, falling back to LDAP-based login using `mod_authnz_ldap`.
