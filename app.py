@@ -474,6 +474,13 @@ def system_settings():
     
     return render_template("settings.html")
 
+
+@app.route("/help")
+@utils.require_role("Viewer")
+def help_page():
+    """Display help documentation"""
+    return render_template("help.html")
+
 # --- API Endpoints ---
 @app.route("/api/v1/hosts")
 @utils.require_role("Viewer", api=True)

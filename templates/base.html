@@ -10,13 +10,13 @@
         <nav>
             <span class="logo">iDrac Updater</span>
             <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('hosts') }}">Hosts</a>
-            <a href="{{ url_for('vcenters') }}">vCenters</a>
-            <a href="{{ url_for('schedules') }}">Schedules</a>
+            <a href="{{ url_for('host_list') }}">Hosts</a>
+            <a href="{{ url_for('vcenter_list') }}">vCenters</a>
+            <a href="{{ url_for('schedule_list') }}">Schedules</a>
             {% if request.user_role == 'Admin' %}
-            <a href="{{ url_for('settings') }}">Settings</a>
+            <a href="{{ url_for('system_settings') }}">Settings</a>
             {% endif %}
-            <a href="{{ url_for('help') }}">Help</a>
+            <a href="{{ url_for('help_page') }}">Help</a>
             <span class="user">{{ request.user }} ({{ request.user_role }})</span>
         </nav>
         <div class="content">
