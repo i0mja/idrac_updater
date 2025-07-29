@@ -1,36 +1,40 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>iDrac Updater</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <nav>
-            <span class="logo">iDrac Updater</span>
-            <a href="{{ url_for('dashboard') }}">Dashboard</a>
-            <a href="{{ url_for('host_list') }}">Hosts</a>
-            <a href="{{ url_for('vcenter_list') }}">vCenters</a>
-            <a href="{{ url_for('schedule_list') }}">Schedules</a>
-            {% if request.user_role == 'Admin' %}
-            <a href="{{ url_for('system_settings') }}">Settings</a>
-            {% endif %}
-            <a href="{{ url_for('help_page') }}">Help</a>
-            <span class="user">{{ request.user }} ({{ request.user_role }})</span>
-        </nav>
-        <div class="content">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-              {% if messages %}
-                <ul class="flashes">
-                {% for category, message in messages %}
-                  <li class="{{ category }}">{{ message }}</li>
-                {% endfor %}
-                </ul>
-              {% endif %}
-            {% endwith %}
-            {% block content %}{% endblock %}
-        </div>
-        <script src="{{ url_for('static', filename='main.js') }}"></script>
-    </body>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}iDRAC Updater{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <script type="importmap">
+    {
+      "imports": {
+        "chart.js": "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"
+      }
+    }
+  </script>
+</head>
+<body class="{{ current_user.role.lower() if current_user else '' }}">
+  <header class="topbar">
+    <button id="toggle-sidebar" class="hamburger">☰</button>
+    <h1>iDRAC Updater</h1>
+    {% if current_user %}<span class="role-badge">{{ current_user.role }}</span>{% endif %}
+  </header>
+  <aside id="sidebar" class="sidebar">
+    <nav>
+      <ul>
+        <li><a href="/dashboard" class="nav-link">Dashboard</a></li>
+        <li><a href="/hosts" class="nav-link">Servers</a></li>
+        <li class="op-only"><a href="/jobs" class="nav-link">Jobs</a></li>
+        <li class="op-only"><a href="/schedules" class="nav-link">Schedules</a></li>
+        <li class="admin-only"><a href="/firmware" class="nav-link">Firmware</a></li>
+        {% if config.VCENTER_HOST %}<li class="admin-only"><a href="/vcenter" class="nav-link">vCenter</a></li>{% endif %}
+      </ul>
+    </nav>
+  </aside>
+  <main id="main">
+    {% block content %}{% endblock %}
+  </main>
+  <script type="module" src="{{ url_for('static', filename='js/app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
 </html>

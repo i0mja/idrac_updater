@@ -1,31 +1,17 @@
 {% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
 {% block content %}
-<h2>Recent Hosts</h2>
-{% if hosts %}
-<table>
-<tr><th>Hostname</th><th>Status</th><th>Message</th></tr>
-{% for h in hosts %}
-<tr><td>{{ h.hostname }}</td><td class="status-{{ h.last_status }}">{{ h.last_status }}</td><td>{{ h.last_message }}</td></tr>
-{% endfor %}
-</table>
-{% else %}
-<p>No hosts discovered yet.</p>
-{% endif %}
-
-<h2>Schedules</h2>
-{% if schedules %}
-<table>
-<tr><th>Name</th><th>Trigger</th><th>Firmware</th><th>Enabled</th></tr>
-{% for s in schedules %}
-<tr>
-    <td>{{ s.name }}</td>
-    <td>{{ s.cron or (s.interval_minutes ~ ' min') }}</td>
-    <td>{{ s.firmware_path }}</td>
-    <td>{{ 'Yes' if s.enabled else 'No' }}</td>
-</tr>
-{% endfor %}
-</table>
-{% else %}
-<p>No schedules defined.</p>
-{% endif %}
+<div class="cards">
+  <div class="card" id="stat-servers"><h3>Servers</h3><span class="value">0</span></div>
+  <div class="card" id="stat-updates"><h3>Pending</h3><span class="value">0</span></div>
+  <div class="card" id="stat-jobs"><h3>Jobs</h3><span class="value">0</span></div>
+  <div class="card" id="stat-protected"><h3>Protected</h3><span class="value">0</span></div>
+</div>
+<section class="graph">
+  <canvas id="compliance-chart" width="200" height="200"></canvas>
+</section>
+<section id="activity-feed">
+  <h3>Recent Activity</h3>
+  <ul class="feed"></ul>
+</section>
 {% endblock %}
