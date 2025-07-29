@@ -1,14 +1,17 @@
 """Utility helpers: notifications, RBAC"""
 
-import subprocess
 import smtplib
+import subprocess
 from email.message import EmailMessage
-import json
-import requests
 from functools import wraps
-from flask import request, abort
-import config
+from types import SimpleNamespace
 from typing import Optional
+
+import requests
+from flask import abort, g, request
+
+import config
+
 
 def get_user_groups(username: str) -> list[str]:
     """Return list of groups the user belongs to using system 'id -Gn' (SSSD cache)."""
@@ -18,6 +21,7 @@ def get_user_groups(username: str) -> list[str]:
     except subprocess.CalledProcessError:
         return []
 
+
 def get_user_role(username: str) -> str:
     groups = get_user_groups(username)
     if config.ADMIN_GROUP in groups:
@@ -26,13 +30,17 @@ def get_user_role(username: str) -> str:
         return "Operator"
     return "Viewer"
 
+
 def require_role(role: str, api: bool = False):
     """Decorator to enforce minimum role. If ``api`` is True, returns HTTP
     error responses directly instead of rendering templates."""
+
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            username = request.environ.get("REMOTE_USER") or request.headers.get("X-Remote-User")
+            username = request.environ.get("REMOTE_USER") or request.headers.get(
+                "X-Remote-User"
+            )
             if not username:
                 abort(401)
             roles = ["Viewer", "Operator", "Admin"]
@@ -41,14 +49,25 @@ def require_role(role: str, api: bool = False):
                 abort(403)
             request.user = username
             request.user_role = user_role
+            g.current_user = SimpleNamespace(username=username, role=user_role)
             return f(*args, **kwargs)
+
         return wrapped
+
     return decorator
+
+
+def login_required(func):
+    """Shortcut for ``require_role('Viewer')``."""
+    return require_role("Viewer")(func)
+
 
 # --- Notifications ---
 
+
 def notify_console(msg: str):
     print(f"[NOTIFY] {msg}")
+
 
 def notify_email(to_addrs: list[str], subject: str, body: str):
     message = EmailMessage()
@@ -59,6 +78,7 @@ def notify_email(to_addrs: list[str], subject: str, body: str):
     with smtplib.SMTP(config.SMTP_SERVER, config.SMTP_PORT) as smtp:
         smtp.send_message(message)
 
+
 def notify_webhook(url: str, payload: dict):
     try:
         requests.post(url, json=payload, timeout=5)
@@ -68,13 +88,17 @@ def notify_webhook(url: str, payload: dict):
 
 # --- Helper functions ---
 
+
 def allowed_file(filename: str, allowed_exts: set[str]) -> bool:
     """Check if filename has an allowed extension."""
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in {e.lower() for e in allowed_exts}
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in {
+        e.lower() for e in allowed_exts
+    }
 
 
 def check_database() -> bool:
     from models import db
+
     try:
         db.session.execute("SELECT 1")
         return True
@@ -83,17 +107,21 @@ def check_database() -> bool:
 
 
 def check_sample_idrac() -> bool:
-    from models import Host
     import validators
+    from models import Host
+
     host = Host.query.first()
     if not host:
         return True
-    return validators.validate_idrac_connection(host.idrac_ip, config.IDRAC_DEFAULT_USER, config.IDRAC_DEFAULT_PASS)
+    return validators.validate_idrac_connection(
+        host.idrac_ip, config.IDRAC_DEFAULT_USER, config.IDRAC_DEFAULT_PASS
+    )
 
 
 def check_vcenters() -> bool:
-    from models import VCenter
     import validators
+    from models import VCenter
+
     for vc in VCenter.query.all():
         if not validators.validate_vcenter_connection(vc.url, vc.username, vc.password):
             return False
@@ -107,8 +135,9 @@ def check_system_health() -> bool:
 def create_system_backup() -> Optional[str]:
     """Very basic database backup."""
     import shutil
-    from pathlib import Path
     import time
+    from pathlib import Path
+
     src = Path(config.DB_PATH)
     if not src.exists():
         return None
@@ -120,4 +149,3 @@ def create_system_backup() -> Optional[str]:
         return str(target)
     except Exception:
         return None
-

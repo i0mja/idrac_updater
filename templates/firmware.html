@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Firmware{% endblock %}
+{% block content %}
+<ul id="firmware-list"></ul>
+<form id="upload-form" class="admin-only" enctype="multipart/form-data">
+  <input type="file" name="firmware_file">
+  <button type="submit">Upload</button>
+</form>
+{% endblock %}

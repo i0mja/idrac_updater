@@ -23,6 +23,7 @@ from flask import (
     Flask,
     abort,
     flash,
+    g,
     jsonify,
     redirect,
     render_template,
@@ -41,6 +42,7 @@ import crypto_utils
 import inventory
 import utils
 import validators
+from blueprints.ui import ui_bp
 from models import FirmwareRepo, Group, Host, Schedule, Task, User, VCenter, db
 
 # --- Flask setup ---
@@ -52,6 +54,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
+app.register_blueprint(ui_bp)
 
 
 def make_celery(flask_app: Flask) -> Celery:
@@ -199,6 +202,8 @@ def inject_globals():
         "now": datetime.utcnow(),
         "app_version": config.VERSION,
         "debug_mode": app.config["DEBUG"],
+        "current_user": getattr(g, "current_user", None),
+        "config": config,
     }
 
 
@@ -220,21 +225,11 @@ def before_request():
 
 # --- Main Routes ---
 @app.route("/")
-@utils.require_role("Viewer")
-def dashboard():
-    """System dashboard with overview information"""
-    stats = {
-        "hosts": Host.query.count(),
-        "groups": Group.query.count(),
-        "schedules": Schedule.query.count(),
-        "pending_updates": Host.query.filter(Host.update_available == True).count(),
-        "recent_tasks": Task.query.order_by(Task.created_at.desc()).limit(5).all(),
-        "system_status": "OK" if utils.check_system_health() else "Degraded",
-    }
-    return render_template("dashboard.html", stats=stats)
+def index():
+    return redirect(url_for("ui.dashboard_page"))
 
 
-@app.route("/hosts")
+@app.route("/legacy/hosts")
 @utils.require_role("Viewer")
 def host_list():
     """List all discovered hosts"""
@@ -326,7 +321,7 @@ def group_create():
     return render_template("group_edit.html")
 
 
-@app.route("/schedules")
+@app.route("/legacy/schedules")
 @utils.require_role("Operator")
 def schedule_list():
     """List all update schedules"""
@@ -394,7 +389,7 @@ def toggle_schedule(schedule_id):
     return redirect(url_for("schedule_list"))
 
 
-@app.route("/firmware")
+@app.route("/legacy/firmware")
 @utils.require_role("Viewer")
 def firmware_list():
     """List available firmware repositories"""
