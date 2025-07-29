@@ -129,6 +129,7 @@ flask db upgrade              # creates SQLite DB if absent
 
 # 3. Launch (development)
 flask --app app run --reload
+celery -A app.celery worker --concurrency 4 -l info
 ```
 
 ### Container Build & Release

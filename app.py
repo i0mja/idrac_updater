@@ -18,6 +18,7 @@ import subprocess
 from datetime import datetime
 from logging.handlers import RotatingFileHandler, SMTPHandler
 
+from celery import Celery
 from flask import (
     Flask,
     abort,
@@ -51,9 +52,32 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 # Initialize extensions
 db.init_app(app)
 migrate = Migrate(app, db)
-scheduler = APScheduler()
-scheduler.init_app(app)
-scheduler.start()
+
+
+def make_celery(flask_app: Flask) -> Celery:
+    celery = Celery(
+        flask_app.import_name,
+        broker=config.CELERY_BROKER_URL,
+        backend=config.CELERY_RESULT_BACKEND,
+    )
+    celery.conf.update(flask_app.config)
+
+    class ContextTask(celery.Task):
+        def __call__(self, *args, **kwargs):
+            with flask_app.app_context():
+                return super().__call__(*args, **kwargs)
+
+    celery.Task = ContextTask
+    return celery
+
+
+celery = make_celery(app)
+
+from scheduler import init_scheduler as init_sched
+from scheduler import scheduler as scheduler_obj
+
+scheduler = scheduler_obj
+init_sched(app)
 
 # --- Security Setup ---
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", secrets.token_urlsafe(64))
@@ -703,14 +727,7 @@ def readiness_check():
 
 # --- Scheduler Initialization ---
 def init_scheduler():
-    """Initialize scheduled jobs"""
-    if not scheduler.running:
-        scheduler.start()
-
-    # Load schedules from database
-    inventory.load_schedules()
-
-    # Add periodic jobs
+    """Add application periodic jobs to the scheduler."""
     if app.config["AUTO_DISCOVERY"]:
         scheduler.add_job(
             func=inventory.discover_from_vcenter,
